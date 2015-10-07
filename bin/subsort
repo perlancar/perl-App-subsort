@@ -48,6 +48,7 @@ _
             my $mods = PERLANCAR::Module::List::list_modules(
                 "Sort::Sub::", {list_modules=>1});
             for (sort keys %$mods) {
+                s/.+:://;
                 say $_;
             }
             exit 0;
