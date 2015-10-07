@@ -1,0 +1,106 @@
+#!perl
+
+# DATE
+# VERSION
+
+use 5.010001;
+use strict 'subs', 'vars';
+use warnings;
+
+use Getopt::Panjang qw(get_options);
+use Sort::Sub ();
+
+my %opts = (
+    ignore_case => 0,
+    reverse => 0,
+);
+my $res = get_options(
+    spec => {
+        'ignore_case|f' => sub { $opts{ignore_case} = 1 },
+        'reverse|r'     => sub { $opts{reverse} = 1 },
+        'help|h'        => sub {
+            print <<'_';
+sortsub - Sort lines of text using Sort::Sub routines
+
+Usage:
+  % subsort [OPTIONS] <ROUTINE> [FILE]...
+  % subsort --help (or -h)
+  % subsort --list (or -l)
+  % subsort --version (or -v)
+
+Options:
+  --help, -h         Show this help message and exit.
+  --version, -v      Show version and exit.
+  --list, -l         List available Sort::Sub routines.
+  --ignore-case, -f  Do a case-insensitive sort.
+  --reverse, -r      Do a reverse sort.
+_
+            exit 0;
+        },
+        'version|v'     => sub {
+            no warnings 'once';
+            say "subsort version ", ($main::VERSION // 'dev'),
+                " (", ($main::DATE // 'no date'), ")";
+            exit 0;
+        },
+        'list|l'        => sub {
+            require PERLANCAR::Module::List;
+            my $mods = PERLANCAR::Module::List::list_modules(
+                "Sort::Sub::", {list_modules=>1});
+            for (sort keys %$mods) {
+                say $_;
+            }
+            exit 0;
+        },
+    },
+);
+die "$res->[1]\n" unless $res->[0] == 200;
+
+@ARGV = @{ $res->[3]{'func.remaining_argv'} };
+if (!@ARGV) {
+    die "Please specify routine to use\n";
+}
+my $routine = shift @ARGV;
+
+Sort::Sub->import("$routine<".
+                      ($opts{ignore_case} ? "i":"").
+                      ($opts{reverse} ? "r":"").
+                      ">");
+for (sort {&{$routine}} map {chomp;$_} <>) {
+    say $_;
+}
+
+# ABSTRACT: Sort lines of text using Sort::Sub routines
+# PODNAME:
+
+=head1 SYNOPSIS
+
+ % subsort [OPTIONS] <ROUTINE> [FILE]...
+
+To list all available routines:
+
+ % subsort -l
+
+
+=head1 DESCRIPTION
+
+This program is like the Unix command B<sort>, but it uses routines from
+L<Sub::Sort>.
+
+
+=head1 OPTIONS
+
+  --help, -h         Show this help message and exit.
+  --version, -v      Show version and exit.
+  --list, -l         List available Sort::Sub routines.
+  --ignore-case, -f  Do a case-insensitive sort.
+  --reverse, -r      Do a reverse sort.
+
+
+=head1 SEE ALSO
+
+The B<sort> Unix command.
+
+L<App::psort>
+
+=cut
