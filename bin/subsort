@@ -86,7 +86,7 @@ To list all available routines:
 =head1 DESCRIPTION
 
 This program is like the Unix command B<sort>, but it uses routines from
-L<Sub::Sort>.
+L<Sort::Sub>.
 
 
 =head1 OPTIONS
