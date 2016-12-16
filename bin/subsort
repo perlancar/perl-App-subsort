@@ -7,19 +7,20 @@ use 5.010001;
 use strict 'subs', 'vars';
 use warnings;
 
-use Getopt::Panjang qw(get_options);
+use Getopt::Long::More;
 use Sort::Sub ();
 
 my %opts = (
     ignore_case => 0,
     reverse => 0,
 );
-my $res = get_options(
-    spec => {
-        'ignore_case|f' => sub { $opts{ignore_case} = 1 },
-        'reverse|r'     => sub { $opts{reverse} = 1 },
-        'help|h'        => sub {
-            print <<'_';
+my $routine;
+my @files;
+my $res = GetOptions(
+    'ignore_case|f' => sub { $opts{ignore_case} = 1 },
+    'reverse|r'     => sub { $opts{reverse} = 1 },
+    'help|h'        => sub {
+        print <<'_';
 sortsub - Sort lines of text using Sort::Sub routines
 
 Usage:
@@ -35,38 +36,52 @@ Options:
   --ignore-case, -f  Do a case-insensitive sort.
   --reverse, -r      Do a reverse sort.
 _
-            exit 0;
-        },
-        'version|v'     => sub {
-            no warnings 'once';
-            say "subsort version ", ($main::VERSION // 'dev'),
-                " (", ($main::DATE // 'no date'), ")";
-            exit 0;
-        },
-        'list|l'        => sub {
-            require PERLANCAR::Module::List;
-            my $mods = PERLANCAR::Module::List::list_modules(
-                "Sort::Sub::", {list_modules=>1});
-            for (sort keys %$mods) {
-                s/.+:://;
-                say $_;
-            }
-            exit 0;
-        },
+        exit 0;
     },
+    'version|v'     => sub {
+        no warnings 'once';
+        say "subsort version ", ($main::VERSION // 'dev'),
+            " (", ($main::DATE // 'no date'), ")";
+        exit 0;
+    },
+    'list|l'        => sub {
+        require PERLANCAR::Module::List;
+        my $mods = PERLANCAR::Module::List::list_modules(
+            "Sort::Sub::", {list_modules=>1});
+        for (sort keys %$mods) {
+            s/.+:://;
+            say $_;
+        }
+        exit 0;
+    },
+    '<>' => optspec(
+        handler => sub {
+            my $val = shift;
+            if (!defined $routine) {
+                $routine = $val;
+            } else {
+                push @files, $val;
+            }
+        },
+        completion => sub {
+            require Complete::Module;
+            my %args = @_;
+            Complete::Module::complete_module(
+                word => $args{word},
+                ns_prefix => "Sort::Sub",
+            );
+        },
+    ),
 );
-die "$res->[1]\n" unless $res->[0] == 200;
+exit 1 unless $res;
 
-@ARGV = @{ $res->[3]{'func.remaining_argv'} };
-if (!@ARGV) {
-    die "Please specify routine to use\n";
-}
-my $routine = shift @ARGV;
+die "Please specify routine to use\n" unless defined $routine;
 
 Sort::Sub->import("$routine<".
                       ($opts{ignore_case} ? "i":"").
                       ($opts{reverse} ? "r":"").
                       ">");
+@ARGV = @files;
 for (sort {&{$routine}} map {chomp;$_} <>) {
     say $_;
 }
