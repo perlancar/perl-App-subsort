@@ -89,7 +89,7 @@ _
     ),
     'arg|A=s' => optspec(
         handler => sub {
-            my $val = shift;
+            my $val = $_[1];
             die "subsort: Invalid syntax in --arg (-A), please use name=val: $val\n"
                 unless $val =~ /(.+?)=(.*)/;
             $routine_args->{$1} = $2;
