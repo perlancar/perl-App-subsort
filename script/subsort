@@ -171,6 +171,13 @@ for (sort {&{$routine}} map {chomp;$_} <>) {
 
  % subsort [OPTIONS] <ROUTINE> [FILE]...
 
+Examples:
+
+ % subsort naturally data.txt
+ % subsort naturally -r data.txt
+ % subsort 'naturally<r>' data.txt
+ % some-cmd | subsort by_several -A first='by_length<r>' -A second=numerically data.txt
+
 To list all available routines:
 
  % subsort -l
