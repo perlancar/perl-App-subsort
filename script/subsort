@@ -154,10 +154,9 @@ exit 1 unless $res;
 die "subsort: Please specify routine to use\n" unless defined $routine;
 
 $routine = Sort::Sub::get_sorter(
-    "$routine<".
-        ($opts{ignore_case} ? "i":"").
-        ($opts{reverse} ? "r":"").
-        ">",
+    "$routine".
+        ($routine =~ /</ ? '' :
+         "<".($opts{ignore_case} ? "i":"").($opts{reverse} ? "r":"").">"),
     $routine_args,
 );
 @ARGV = @files;
