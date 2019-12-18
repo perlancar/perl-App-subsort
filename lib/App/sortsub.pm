@@ -1,6 +1,8 @@
 package App::sortsub;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 1;

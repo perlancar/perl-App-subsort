@@ -1,6 +1,8 @@
 package App::subsort;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 1;
