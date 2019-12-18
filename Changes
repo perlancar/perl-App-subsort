@@ -1,3 +1,10 @@
+0.043   2019-12-18  Released-By: PERLANCAR; Urgency: medium
+
+	- [ux] Allow NAME<opt> syntax in first argument.
+
+	- [doc] Add some examples in Synopsis.
+
+
 0.042   2019-12-18  Released-By: PERLANCAR; Urgency: medium
 
 	- [bugfix] Fix getting --arg's value.
