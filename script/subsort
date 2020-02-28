@@ -224,6 +224,11 @@ Examples:
  % subsort 'naturally<r>' data.txt
  % some-cmd | subsort by_several -A first='by_length<r>' -A second=numerically data.txt
 
+Some other examples:
+
+ # like Unix's tac
+ % subsort record-by-reverse-order data.txt
+
 To list all available routines:
 
  % subsort -l
