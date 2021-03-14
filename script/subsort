@@ -48,6 +48,7 @@ Options:
   --help, -h         Show this help message and exit.
   --version, -v      Show version and exit.
   --list, -l         List available Sort::Sub routines.
+
   --ignore-case, -f  Do a case-insensitive sort.
   --reverse, -r      Do a reverse sort.
   --arg=s, -A        Argument to pass to sorter. In the form of name=val. Can
@@ -245,10 +246,12 @@ L<Sort::Sub>.
   --help, -h         Show this help message and exit.
   --version, -v      Show version and exit.
   --list, -l         List available Sort::Sub routines.
+
   --ignore-case, -f  Do a case-insensitive sort.
   --reverse, -r      Do a reverse sort.
   --arg=s, -A        Argument to pass to sorter. In the form of name=val. Can
                        be specified multiple times.
+  --key=s, -k        Perl code to generate sort key to sort against.
 
 
 =head1 SEE ALSO
