@@ -20,6 +20,8 @@ my %opts = (
     ignore_case => 0,
     reverse => 0,
     key => undef,
+    input_record_separator => "\n",
+    output_record_separator => "",
 );
 my ($routine, $meta);
 my $routine_args = {};
@@ -28,6 +30,22 @@ my $res = GetOptions(
     'ignore_case|f' => sub { $opts{ignore_case} = 1 },
     'reverse|r'     => sub { $opts{reverse} = 1 },
     'key|k=s'       => \$opts{key},
+    '0:s'           => sub {
+        if (!defined($_[1]) || $_[1] eq '') {
+            $opts{input_record_separator}  = "\0";
+        } elsif ($_[1] =~ /\A[0-7]{3}\z/) {
+            $opts{input_record_separator} = chr(oct($_[1]));
+        } elsif ($_[1] =~ /\Ax[0-9A-Fa-f]{2}\z/) {
+            $opts{input_record_separator} = chr(hex($_[1]));
+        } else {
+            warn "Invalid record separator (-0), please specify octal e.g. -0177 or hexadecimal e.g. -0x7f";
+            die "";
+        }
+    },
+    'para' => sub {
+        $opts{input_record_separator} = "";
+        #$opts{output_record_separator} = "\n\n";
+    },
     'help|h'        => sub {
         print <<'_';
 sortsub - Sort lines of text using Sort::Sub routines
@@ -53,6 +71,8 @@ Options:
   --reverse, -r      Do a reverse sort.
   --arg=s, -A        Argument to pass to sorter. In the form of name=val. Can
                        be specified multiple times.
+  -0[octal or hexa]  Specify record separator character (default is newline).
+  --para             Split input per paragraph (by blank lines).
   --key=s, -k        Perl code to generate sort key to sort against.
 
 _
@@ -174,10 +194,13 @@ $routine =~ s/-/_/g; # ux
     "with meta",
 );
 @ARGV = @files;
+local $/ = $opts{input_record_separator};
+local $\ = $opts{output_record_separator};
+#say "D:output_record_separator = <$opts{output_record_separator}>";
 if (defined $opts{key}) {
     my $code_gen_key = eval "sub { $opts{key} }";
     die "Can't compile code in --key: $@" if $@;
-    my @lines = map {chomp;$_} <>;
+    my @lines = map {$_} <>;
     my @keys; for (@lines) { push @keys, $code_gen_key->($_) }
     my @sorted_indices = sort {
         local $main::a = $keys[$a];
@@ -191,7 +214,7 @@ if (defined $opts{key}) {
             $main::a, $main::b, $res;
         $res;
     } 0..$#lines;
-    say $lines[$_] for @sorted_indices;
+    print $lines[$_] for @sorted_indices;
 } else {
     my $i = 0;
     for (sort {
@@ -206,12 +229,12 @@ if (defined $opts{key}) {
                 $main::a->[0], $main::b->[0], $res;
         }
         $res;
-    } map {chomp; [$_, $i++]} <>) {
-        say $_->[0];
+    } map {[$_, $i++]} <>) {
+        print $_->[0];
     }
 }
 
-# ABSTRACT: Sort lines of text using Sort::Sub routines
+# ABSTRACT: Sort lines of text (or records) using Sort::Sub routines
 # PODNAME:
 
 =head1 SYNOPSIS
@@ -252,7 +275,8 @@ L<Sort::Sub>.
   --arg=s, -A        Argument to pass to sorter. In the form of name=val. Can
                        be specified multiple times.
   --key=s, -k        Perl code to generate sort key to sort against.
-
+  -0[octal or hexa]  Specify record separator character (default is newline).
+  --para             Split input per paragraph (by blank lines).
 
 =head1 SEE ALSO
 
