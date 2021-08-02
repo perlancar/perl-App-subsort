@@ -2,3 +2,4 @@ App-subsort-*
 .build
 *~
 nytprof*
+.DS_Store
