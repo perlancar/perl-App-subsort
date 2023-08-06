@@ -1,5 +1,7 @@
 package App::subsort;
 
+use strict;
+
 # AUTHORITY
 # DATE
 # DIST

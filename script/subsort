@@ -2,11 +2,6 @@
 
 ## no critic: (InputOutput::ProhibitReadlineInForLoop)
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 use 5.010001;
 use strict 'subs', 'vars';
 use warnings;
@@ -15,6 +10,11 @@ use Log::ger;
 use Complete::Util qw(arrayify_answer);
 use Getopt::Long::More;
 use Sort::Sub ();
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 my %opts = (
     ignore_case => 0,
