@@ -278,6 +278,24 @@ L<Sort::Sub>.
   -0[octal or hexa]  Specify record separator character (default is newline).
   --para             Split input per paragraph (by blank lines).
 
+
+=head1 TIPS AND TRICKS
+
+=head2 Debugging
+
+If you use C<--key>, you can use L<Log::ger::Screen> to check the resulting
+keys, e.g.:
+
+ % some-command-that-produces-lines | PERL5OPT=-MLog::ger::Screen TRACE=1 subsort numerically --key '/(\d+)/; $1 // 0'
+
+=head2 Sorting by multiple criteria
+
+The L<Sort::Sub> routine L<by_several|Sort::Sub::by_several> allows you to sort
+by multiple sort subroutines. For example:
+
+ % some-command-that-produces-lines | subsort by_several -A first=numerically -A second=randomly
+
+
 =head1 SEE ALSO
 
 The B<sort> Unix command.
