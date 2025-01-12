@@ -1,5 +1,7 @@
 package App::sortsub;
 
+use strict;
+
 # AUTHORITY
 # DATE
 # DIST
